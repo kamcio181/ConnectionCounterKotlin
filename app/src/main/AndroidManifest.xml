@@ -20,7 +20,12 @@
         <receiver
             android:name=".ConnectionReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
+
+        <service
+            android:name=".ConnectionMonitorService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
