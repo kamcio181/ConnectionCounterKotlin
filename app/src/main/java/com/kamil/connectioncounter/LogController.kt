@@ -1,13 +1,13 @@
 package com.kamil.connectioncounter
 
 import android.content.Context
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val LOG_NAME = "Log.txt"
 class LogController (private val context: Context){
+    private val logFile: File = File(context.filesDir, LOG_NAME)
 
     fun saveDurationToLog(isPlaying: Boolean, startTime: Long, stopTime:Long){
         val message = if(isPlaying) "Playing " else "Standby " +
@@ -26,8 +26,26 @@ class LogController (private val context: Context){
     }
 
     fun saveToLog(message: String){
-        val outputStream = FileOutputStream(File(context.filesDir, LOG_NAME), true)
+        val outputStream = FileOutputStream(logFile, true)
         outputStream.write(message.toByteArray())
         outputStream.close()
+    }
+
+    fun clearLog(){
+        if(logFile.exists()) logFile.delete()
+    }
+
+    fun getLogs(): String{
+        if(!logFile.exists()){
+            return String()
+        }
+        val input = BufferedReader(InputStreamReader(FileInputStream(logFile)))
+        val buffer = StringBuffer()
+        var line = input.readLine()
+        while (line != null) {
+            buffer.append(line).append("\n")
+            line = input.readLine()
+        }
+        return buffer.toString().trim()
     }
 }

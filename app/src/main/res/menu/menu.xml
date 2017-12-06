@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_reset"
+        android:orderInCategory="100"
+        android:title="Reset"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_set"
+        android:orderInCategory="200"
+        android:title="Set"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_log"
+        android:orderInCategory="300"
+        android:title="Log"
+        app:showAsAction="ifRoom" />
+</menu>

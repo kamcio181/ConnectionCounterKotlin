@@ -8,7 +8,7 @@ import android.content.Intent
 
 const val HEADPHONES_MAC_ADDRESS = "00:1A:7D:E0:35:5F"
 class ConnectionReceiver : BroadcastReceiver() {
-    lateinit var serviceIntent: Intent
+    private lateinit var serviceIntent: Intent
     override fun onReceive(context: Context, intent: Intent) {
         serviceIntent = Intent(context, ConnectionMonitorService::class.java)
         val action = intent.action
@@ -38,8 +38,7 @@ class ConnectionReceiver : BroadcastReceiver() {
         if(currentState == BluetoothAdapter.STATE_CONNECTED){
             logDebug("Target device connected")
             context.startService(serviceIntent)
-        } else if (currentState == BluetoothAdapter.STATE_DISCONNECTED
-                && previousState == BluetoothAdapter.STATE_CONNECTED) {
+        } else if (currentState == BluetoothAdapter.STATE_DISCONNECTED) {
             logDebug("Target device disconnected")
             context.stopService(serviceIntent)
         }

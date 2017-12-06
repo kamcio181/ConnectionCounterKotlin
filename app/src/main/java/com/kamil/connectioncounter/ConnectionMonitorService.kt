@@ -20,7 +20,6 @@ class ConnectionMonitorService : Service() {
     private lateinit var audioManager: AudioManager
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: Notification.Builder
-    private lateinit var workingRunnable: Runnable
     private var playingDuration: Long = 0
     private var standbyDuration: Long = 0
     private var startTime: Long = 0
@@ -48,12 +47,22 @@ class ConnectionMonitorService : Service() {
         logDebug("onStartCommand")
         setUpClassFields()
         setUpNotification()
-        handler.removeCallbacksAndMessages(null)//TODO needed?
+
+        startWorkingRunnable()
+        return START_STICKY
+    }
+
+    private fun setUpClassFields() {
+        preferencesController = PreferencesController(this)
+        logController = LogController(this)
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationBuilder = Notification.Builder(this) //TODO handle deprecation
+        startTime = System.currentTimeMillis()
+        wasPlaying = audioManager.isMusicActive
         playingDuration = preferencesController.getPlayingDuration()
         standbyDuration = preferencesController.getStandbyDuration()
-        headsetConnected = true
-
-        return START_STICKY
+        headsetConnected = true  //TODO no needed if bind service does not start it
     }
 
     private fun setUpNotification() {
@@ -65,40 +74,35 @@ class ConnectionMonitorService : Service() {
                 .setOngoing(true)
     }
 
-    private fun setUpClassFields() {
-        preferencesController = PreferencesController(this)
-        logController = LogController(this)
-        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationBuilder = Notification.Builder(this) //TODO handle deprecation
-        startTime = System.currentTimeMillis()
-        wasPlaying = audioManager.isMusicActive
+    private fun startWorkingRunnable() {
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                val isScreenOn = isScreenOn()
+                val isMusicActive = audioManager.isMusicActive
+                if (isMusicActive) {
+                    playingDuration++
+                    showNotificationIfNeeded(playingDuration, isScreenOn)
+                } else {
+                    standbyDuration++
+                    showNotificationIfNeeded(standbyDuration, isScreenOn)
+                }
 
-        workingRunnable = Runnable {
-            val isScreenOn = isScreenOn()
-            val isMusicActive = audioManager.isMusicActive
-            if(isMusicActive){
-                playingDuration++
-                showNotificationIfNeeded(playingDuration, isScreenOn)
-            } else {
-                standbyDuration++
-                showNotificationIfNeeded(standbyDuration, isScreenOn)
+
+                if (isMusicActive != wasPlaying) {
+                    logController.saveDurationToLog(wasPlaying, startTime, System.currentTimeMillis())
+                    startTime = System.currentTimeMillis()
+                }
+
+                if (isScreenOn && !wasScreenOnPreviously) {
+                    notifyImmediately(false)
+                }
+
+                wasScreenOnPreviously = isScreenOn
+                wasPlaying = isMusicActive
+                handler.postDelayed(this, 1000)
             }
-
-
-            if(isMusicActive != wasPlaying){
-                logController.saveDurationToLog(wasPlaying, startTime, System.currentTimeMillis())
-                startTime = System.currentTimeMillis()
-            }
-
-            if(isScreenOn && !wasScreenOnPreviously){
-                notifyImmediately(false)
-            }
-
-            wasScreenOnPreviously = isScreenOn
-            wasPlaying = isMusicActive
-            handler.postDelayed(workingRunnable, 1000)
-        }
+        }, 1000)
     }
 
     private fun showNotificationIfNeeded(duration:Long, isScreenOn: Boolean) {
@@ -130,6 +134,10 @@ class ConnectionMonitorService : Service() {
         notificationBuilder.setOngoing(false)
         notifyImmediately(true)
         preferencesController.saveDuration(playingDuration, standbyDuration)
+    }
+
+    fun getDurations(): PreferencesController.Durations{
+        return PreferencesController.Durations(playingDuration, standbyDuration)
     }
 
     fun resetTimer(){

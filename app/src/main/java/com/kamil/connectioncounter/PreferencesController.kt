@@ -8,6 +8,7 @@ const val PLAYING_DURATION = "PlayingDuration"
 const val STANDBY_DURATION = "StandbyDuration"
 class PreferencesController (context: Context){
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+    private val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
     fun getPlayingDuration(): Long {
         return sharedPreferences.getLong(PLAYING_DURATION, 0)
@@ -23,7 +24,11 @@ class PreferencesController (context: Context){
     }
 
     fun saveDuration(playingDuration: Long, standbyDuration: Long){
-        sharedPreferences.edit().putLong(PLAYING_DURATION, playingDuration)
+        editor.putLong(PLAYING_DURATION, playingDuration)
                 .putLong(STANDBY_DURATION, standbyDuration).apply()
+    }
+
+    fun savePlayingDuration(playingDuration: Long){
+        editor.putLong(PLAYING_DURATION, playingDuration).apply()
     }
 }

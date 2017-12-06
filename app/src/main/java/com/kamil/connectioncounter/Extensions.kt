@@ -7,6 +7,10 @@ import android.hardware.display.DisplayManager
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.Display
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import java.util.concurrent.TimeUnit
 
@@ -18,9 +22,17 @@ import java.util.concurrent.TimeUnit
 //    supportFragmentManager.inTransaction { replace(containerId, fragment) }
 //}
 
-//fun EditText.trimmedText(): String{
-//    return text.toString().trim()
-//}
+fun EditText.trimmedText(): String{
+    return text.toString().trim()
+}
+
+fun EditText.length(): Int{
+    return trimmedText().length
+}
+
+fun EditText.isEmpty(): Boolean{
+    return trimmedText().isEmpty()
+}
 
 fun Any.logDebug(message: String){
     Log.d(javaClass.simpleName, message)
@@ -62,6 +74,10 @@ private fun formatDuration(duration: Long, addSeconds: Boolean = true): String{
     } else {
         String.format("%02d:%02d", hours, minutes)
     }
+}
+
+fun Activity.inflate(layoutRes: Int): View {
+    return layoutInflater.inflate(layoutRes, null)
 }
 
 //fun View.visible(show: Boolean){
