@@ -22,7 +22,6 @@ const val BOLD_START_TAG = "<b>"
 const val BOLD_END_TAG = "</b>"
 const val NEW_LINE_TAG = "<br>"
 class MainActivity : AppCompatActivity() {
-    private lateinit var preferencesController: PreferencesController
     private lateinit var logController: LogController
     private lateinit var service: ConnectionMonitorService
     private val handler = Handler()
@@ -43,7 +42,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        preferencesController = PreferencesController(this)
         logController = LogController(this)
     }
 
@@ -52,16 +50,14 @@ class MainActivity : AppCompatActivity() {
         bindService(Intent(this, ConnectionMonitorService::class.java),
                 connection, 0)
         if(!bound){
-            val (playingDuration, standbyDuration) = preferencesController.getDurations()
-            updateDurationTextView(playingDuration, standbyDuration)
+            updateDurationTextView(sharedPreferences.playingDuration, sharedPreferences.standbyDuration)
         }
     }
 
     private fun startUpdatingTextView() {
         handler.postDelayed(object : Runnable {
             override fun run() {
-                val (playingDuration, standbyDuration) = service.getDurations()
-                updateDurationTextView(playingDuration, standbyDuration)
+                updateDurationTextView(service.playingDuration, service.standbyDuration)
                 handler.postDelayed(this, 1000)
             }
         }, 1000)
@@ -96,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun clearConnectionDurations() {
         toast("Time cleared")
-        preferencesController.saveDuration(0, 0)
+        sharedPreferences.durations(0,0)
         if (bound) service.resetTimer()
         updateDurationTextView(0, 0)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -116,15 +112,15 @@ class MainActivity : AppCompatActivity() {
     private fun setPlayingTime() {
         var value = if (timeEditText.isEmpty()) 0 else timeEditText.trimmedText().toLong() * 60
         if (setTimeRadioButton.isChecked) {
-            value += if (bound) service.getDurations().playingDuration else preferencesController.getPlayingDuration()
+            value += if (bound) service.playingDuration else sharedPreferences.playingDuration
             logController.saveToLog("Added $value min")
         } else {
             logController.clearLog()
             logController.saveToLog("Set $value min")
         }
-        preferencesController.savePlayingDuration(value)
+        sharedPreferences.playingDuration = value
         toast("Time updated")
-        updateDurationTextView(value, if (bound) service.getDurations().standbyDuration else preferencesController.getStandbyDuration())
+        updateDurationTextView(value, if (bound) service.standbyDuration else sharedPreferences.standbyDuration)
     }
 
     private fun handleLogAction() {

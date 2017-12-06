@@ -15,13 +15,12 @@ const val NOTIFICATION_ID = 1
 class ConnectionMonitorService : Service() {
     private val binder: IBinder = LocalBinder()
     private val handler = Handler()
-    private lateinit var preferencesController: PreferencesController
     private lateinit var logController: LogController
     private lateinit var audioManager: AudioManager
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: Notification.Builder
-    private var playingDuration: Long = 0
-    private var standbyDuration: Long = 0
+    var playingDuration: Long = 0
+    var standbyDuration: Long = 0
     private var startTime: Long = 0
     private var headsetConnected = false
     private var wasScreenOnPreviously = false
@@ -53,15 +52,14 @@ class ConnectionMonitorService : Service() {
     }
 
     private fun setUpClassFields() {
-        preferencesController = PreferencesController(this)
         logController = LogController(this)
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationBuilder = Notification.Builder(this) //TODO handle deprecation
         startTime = System.currentTimeMillis()
         wasPlaying = audioManager.isMusicActive
-        playingDuration = preferencesController.getPlayingDuration()
-        standbyDuration = preferencesController.getStandbyDuration()
+        playingDuration = sharedPreferences.playingDuration
+        standbyDuration = sharedPreferences.standbyDuration
         headsetConnected = true  //TODO no needed if bind service does not start it
     }
 
@@ -133,11 +131,7 @@ class ConnectionMonitorService : Service() {
         handler.removeCallbacksAndMessages(null)
         notificationBuilder.setOngoing(false)
         notifyImmediately(true)
-        preferencesController.saveDuration(playingDuration, standbyDuration)
-    }
-
-    fun getDurations(): PreferencesController.Durations{
-        return PreferencesController.Durations(playingDuration, standbyDuration)
+        sharedPreferences.durations(playingDuration, standbyDuration)
     }
 
     fun resetTimer(){
