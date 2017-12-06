@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun composeText(playingDuration: Long, standbyDuration: Long): Spanned {
-        val htmlText = "${BOLD_START_TAG}Total: $BOLD_END_TAG${formatDuration(playingDuration + standbyDuration)}"
+        val htmlText = "${BOLD_START_TAG}Total: $BOLD_END_TAG${formatDuration(playingDuration + standbyDuration)}" +
                 "$NEW_LINE_TAG${BOLD_START_TAG}Playing: $BOLD_END_TAG${formatDuration(playingDuration)}" +
                 "$NEW_LINE_TAG${BOLD_START_TAG}Standby: $BOLD_END_TAG${formatDuration(standbyDuration)}"
         return if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N){

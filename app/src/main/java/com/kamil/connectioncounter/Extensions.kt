@@ -4,12 +4,9 @@ import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.hardware.display.DisplayManager
-import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.Display
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import java.util.concurrent.TimeUnit
@@ -24,10 +21,6 @@ import java.util.concurrent.TimeUnit
 
 fun EditText.trimmedText(): String{
     return text.toString().trim()
-}
-
-fun EditText.length(): Int{
-    return trimmedText().length
 }
 
 fun EditText.isEmpty(): Boolean{
@@ -46,9 +39,9 @@ fun Activity.toast(message: String, duration: Int = Toast.LENGTH_SHORT){
     Toast.makeText(this, message, duration).show()
 }
 
-fun Fragment.toast(message: String, duration: Int = Toast.LENGTH_SHORT){
-    activity.toast(message, duration)
-}
+//fun Fragment.toast(message: String, duration: Int = Toast.LENGTH_SHORT){
+//    activity.toast(message, duration)
+//}
 
 fun Service.isScreenOn(): Boolean{
     val displayManager = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
@@ -57,15 +50,7 @@ fun Service.isScreenOn(): Boolean{
     return false
 }
 
-fun Activity.formatDuration(duration: Long, addSeconds: Boolean = true): String{
-    return formatDuration(duration, addSeconds)
-}
-
-fun Service.formatDuration(duration: Long, addSeconds: Boolean = true): String{
-    return formatDuration(duration, addSeconds)
-}
-
-private fun formatDuration(duration: Long, addSeconds: Boolean = true): String{
+fun formatDuration(duration: Long, addSeconds: Boolean = true): String{
     val hours = TimeUnit.SECONDS.toHours(duration)
     val minutes = TimeUnit.SECONDS.toMinutes(duration) - hours * 60
     return if(addSeconds) {
