@@ -15,7 +15,6 @@ const val NOTIFICATION_ID = 1
 class ConnectionMonitorService : Service() {
     private val binder: IBinder = LocalBinder()
     private val handler = Handler()
-    private lateinit var logController: LogController
     private lateinit var audioManager: AudioManager
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: Notification.Builder
@@ -52,7 +51,6 @@ class ConnectionMonitorService : Service() {
     }
 
     private fun setUpClassFields() {
-        logController = LogController(this)
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationBuilder = Notification.Builder(this) //TODO handle deprecation

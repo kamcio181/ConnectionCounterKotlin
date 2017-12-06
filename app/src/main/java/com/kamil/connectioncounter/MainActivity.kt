@@ -22,7 +22,6 @@ const val BOLD_START_TAG = "<b>"
 const val BOLD_END_TAG = "</b>"
 const val NEW_LINE_TAG = "<br>"
 class MainActivity : AppCompatActivity() {
-    private lateinit var logController: LogController
     private lateinit var service: ConnectionMonitorService
     private val handler = Handler()
     private var bound = false
@@ -42,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        logController = LogController(this)
     }
 
     override fun onStart() {
@@ -97,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         updateDurationTextView(0, 0)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(NOTIFICATION_ID)
-        logController.clearLog()
+        logController.activityLog = ""
     }
 
     private fun handleSetAction() {
@@ -113,10 +111,10 @@ class MainActivity : AppCompatActivity() {
         var value = if (timeEditText.isEmpty()) 0 else timeEditText.trimmedText().toLong() * 60
         if (setTimeRadioButton.isChecked) {
             value += if (bound) service.playingDuration else sharedPreferences.playingDuration
-            logController.saveToLog("Added $value min")
+            logController.activityLog = "Added $value min"
         } else {
-            logController.clearLog()
-            logController.saveToLog("Set $value min")
+            logController.activityLog = ""
+            logController.activityLog = "Set $value min"
         }
         sharedPreferences.playingDuration = value
         toast("Time updated")
@@ -124,7 +122,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleLogAction() {
-        val logs = logController.getLogs()
+        val logs = logController.activityLog
         if(logs.isEmpty()){
             toast("Logs empty")
             return
