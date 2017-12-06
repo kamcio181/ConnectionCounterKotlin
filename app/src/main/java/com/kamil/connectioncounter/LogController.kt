@@ -37,14 +37,15 @@ class LogController (context: Context){
 
         val outputStream = FileOutputStream(activityLogFile, true)
         outputStream.write(message.toByteArray())
+        outputStream.write("\n".toByteArray())
         outputStream.close()
     }
 
-    fun clearLog(){
+    private fun clearLog(){
         if(activityLogFile.exists()) activityLogFile.delete()
     }
 
-    fun getLogs(): String{
+    private fun getLogs(): String{
         if(!activityLogFile.exists()){
             return String()
         }

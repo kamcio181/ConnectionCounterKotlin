@@ -15,8 +15,9 @@ import android.text.Html
 import android.text.Spanned
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.dialog_set_time.*
+import kotlinx.android.synthetic.main.dialog_set_time.view.*
 
 const val BOLD_START_TAG = "<b>"
 const val BOLD_END_TAG = "</b>"
@@ -85,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         AlertDialog.Builder(this).setTitle("Do you want to reset timer?")
                 .setPositiveButton("Confirm", { _, _ -> clearConnectionDurations() })
                 .setNegativeButton("Cancel", { _, _ -> toast("Cancelled")})
+                .setCancelable(false)
                 .create().show()
     }
 
@@ -102,14 +104,15 @@ class MainActivity : AppCompatActivity() {
         val layout = inflate(R.layout.dialog_set_time)
         AlertDialog.Builder(this).setTitle("Set playing time")
                 .setView(layout)
-                .setPositiveButton("Confirm", { _, _ -> setPlayingTime() })
+                .setPositiveButton("Confirm", { _, _ -> setPlayingTime(layout) })
                 .setNegativeButton("Cancel", { _, _ -> toast("Cancelled")})
+                .setCancelable(false)
                 .create().show()
     }
 
-    private fun setPlayingTime() {
-        var value = if (timeEditText.isEmpty()) 0 else timeEditText.trimmedText().toLong() * 60
-        if (setTimeRadioButton.isChecked) {
+    private fun setPlayingTime(layout: View) {
+        var value = if (layout.timeEditText.isEmpty()) 0 else layout.timeEditText.trimmedText().toLong() * 60
+        if (layout.addTimeRadioButton.isChecked) {
             value += if (bound) service.playingDuration else sharedPreferences.playingDuration
             logController.activityLog = "Added $value min"
         } else {

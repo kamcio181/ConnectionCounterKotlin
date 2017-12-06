@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-const val HEADPHONES_MAC_ADDRESS = "00:1A:7D:E0:35:5F"
+const val HEADPHONES_MAC_ADDRESS = "00:1A:7D:12:34:F0"
 class ConnectionReceiver : BroadcastReceiver() {
     private lateinit var serviceIntent: Intent
     override fun onReceive(context: Context, intent: Intent) {
@@ -22,7 +22,7 @@ class ConnectionReceiver : BroadcastReceiver() {
     private fun processConnectionStateChangedEvent(context: Context, intent: Intent){
         if(intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE).address
                 != HEADPHONES_MAC_ADDRESS) {
-            logDebug("Not target device")
+            logDebug("Not target device ${intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE).address}")
             return
         }
 
