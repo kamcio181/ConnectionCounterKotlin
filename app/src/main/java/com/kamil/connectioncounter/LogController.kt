@@ -14,8 +14,8 @@ class LogController (context: Context){
         set(value) = saveToLog(value)
 
     fun saveDurationToLog(isPlaying: Boolean, startTime: Long, stopTime:Long){
-        val message = if(isPlaying) "Playing " else "Standby " +
-                "${formatDateAndTime(startTime)} - ${formatDateAndTime(stopTime)}" +
+        val message = (if(isPlaying) "Playing " else "Standby ") +
+                "${formatDateAndTime(startTime)} - ${formatDateAndTime(stopTime)}" + " "
                 formatDifferenceInMinutes(stopTime - startTime)
         activityLog = message
     }

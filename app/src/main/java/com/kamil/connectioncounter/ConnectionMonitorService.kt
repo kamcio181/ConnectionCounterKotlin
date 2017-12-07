@@ -130,6 +130,7 @@ class ConnectionMonitorService : Service() {
         notificationBuilder.setOngoing(false)
         notifyImmediately(true)
         sharedPreferences.durations(playingDuration, standbyDuration)
+        logController.saveDurationToLog(wasPlaying, startTime, System.currentTimeMillis())
     }
 
     fun resetTimer(){

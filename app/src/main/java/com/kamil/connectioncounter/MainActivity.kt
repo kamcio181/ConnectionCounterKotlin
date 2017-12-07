@@ -1,6 +1,7 @@
 package com.kamil.connectioncounter
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
@@ -13,9 +14,11 @@ import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.text.Spanned
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_set_time.view.*
 
@@ -111,15 +114,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setPlayingTime(layout: View) {
-        var value = if (layout.timeEditText.isEmpty()) 0 else layout.timeEditText.trimmedText().toLong() * 60
+        var value = if (layout.timeEditText.isEmpty()) 0 else layout.timeEditText.trimmedText().toLong()
         if (layout.addTimeRadioButton.isChecked) {
-            value += if (bound) service.playingDuration else sharedPreferences.playingDuration
             logController.activityLog = "Added $value min"
+            value *= 60
+            if(bound){
+                value += service.playingDuration
+                service.playingDuration = value
+            } else {
+                value += sharedPreferences.playingDuration
+            }
+
         } else {
             logController.activityLog = ""
             logController.activityLog = "Set $value min"
+            value *= 60
         }
-        sharedPreferences.playingDuration = value
+        sharedPreferences.playingDuration = value //TODO is it needed here?
         toast("Time updated")
         updateDurationTextView(value, if (bound) service.standbyDuration else sharedPreferences.standbyDuration)
     }
@@ -149,6 +160,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLogDialog(logs: String) {
-        AlertDialog.Builder(this).setTitle("Log").setMessage(logs).create().show()
+        val dialog = AlertDialog.Builder(this).setTitle("Log").setMessage(logs).create()
+        dialog.show()
+        val textView = dialog.findViewById<TextView>(android.R.id.message)
+        textView.textSize = 12f
     }
 }
