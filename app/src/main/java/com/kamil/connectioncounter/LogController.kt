@@ -1,12 +1,14 @@
 package com.kamil.connectioncounter
 
 import android.content.Context
+import android.os.Environment
 import java.io.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val LOG_NAME = "Log.txt"
-class LogController (context: Context){
+const val EXTERNAL_LOG_NAME = "BluetoothConnectionLogs.txt"
+class LogController (private val context: Context){
     private val activityLogFile: File by lazy { File(context.filesDir, LOG_NAME) }
 
     var activityLog: String
@@ -57,5 +59,14 @@ class LogController (context: Context){
             line = input.readLine()
         }
         return buffer.toString().trim()
+    }
+
+    fun extractLogs(): File? {
+        return try {
+            activityLogFile.copyTo(File(Environment.getExternalStorageDirectory(), EXTERNAL_LOG_NAME), true)
+        } catch (e: Exception){
+            logDebug(e.message?: "Unknown error")
+            null
+        }
     }
 }

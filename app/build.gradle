@@ -9,7 +9,7 @@ android {
         debug {
             keyAlias 'debug'
             keyPassword 'androiddebug'
-            storeFile file('/home/k.kaszubski/kamilDebugKey2.jks')
+            storeFile file('/home/kamil/kamilDebugKey2.jks')
             storePassword 'androiddebug'
         }
     }

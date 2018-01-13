@@ -7,8 +7,10 @@ private const val PREFERENCES_NAME = "MainPreferences"
 private const val PLAYING_DURATION = "PlayingDuration"
 private const val STANDBY_DURATION = "StandbyDuration"
 class PreferencesController (context: Context){
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
-    private val editor: SharedPreferences.Editor by lazy{
+    private val sharedPreferences: SharedPreferences by lazy {
+        context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+    }
+    private val editor: SharedPreferences.Editor by lazy {
         sharedPreferences.edit()
     }
 
